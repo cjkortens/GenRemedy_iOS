@@ -1,0 +1,455 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D9FE25B2FC1030B007EAA7B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1D9FE25A2FC1030B007EAA7B /* GoogleService-Info.plist */; };
+		BF0001AABBCCDDEE00112233 /* GenRemedyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0001AABBCCDDEE00112233 /* GenRemedyApp.swift */; };
+		BF0002AABBCCDDEE00112233 /* SpotifyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0002AABBCCDDEE00112233 /* SpotifyModels.swift */; };
+		BF0003AABBCCDDEE00112233 /* SpotifyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0003AABBCCDDEE00112233 /* SpotifyRepository.swift */; };
+		BF0004AABBCCDDEE00112233 /* GeminiRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0004AABBCCDDEE00112233 /* GeminiRepository.swift */; };
+		BF0005AABBCCDDEE00112233 /* GenreLibraryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0005AABBCCDDEE00112233 /* GenreLibraryRepository.swift */; };
+		BF0006AABBCCDDEE00112233 /* GenreDescriptionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0006AABBCCDDEE00112233 /* GenreDescriptionRepository.swift */; };
+		BF0007AABBCCDDEE00112233 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0007AABBCCDDEE00112233 /* PlayerViewModel.swift */; };
+		BF0008AABBCCDDEE00112233 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0008AABBCCDDEE00112233 /* ContentView.swift */; };
+		BF0009AABBCCDDEE00112233 /* TrackCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0009AABBCCDDEE00112233 /* TrackCardView.swift */; };
+		BF0010AABBCCDDEE00112233 /* GenreDescriptionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR0010AABBCCDDEE00112233 /* GenreDescriptionCardView.swift */; };
+		BF0011AABBCCDDEE00112233 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FR0011AABBCCDDEE00112233 /* Assets.xcassets */; };
+		BF0012AABBCCDDEE00112233 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = SPM001AABBCCDDEE00112233 /* FirebaseCore */; };
+		BF0013AABBCCDDEE00112233 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = SPM002AABBCCDDEE00112233 /* FirebaseDatabase */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D9FE25A2FC1030B007EAA7B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		FR0000AABBCCDDEE00112233 /* GenRemedy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GenRemedy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FR0001AABBCCDDEE00112233 /* GenRemedyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenRemedyApp.swift; sourceTree = "<group>"; };
+		FR0002AABBCCDDEE00112233 /* SpotifyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyModels.swift; sourceTree = "<group>"; };
+		FR0003AABBCCDDEE00112233 /* SpotifyRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyRepository.swift; sourceTree = "<group>"; };
+		FR0004AABBCCDDEE00112233 /* GeminiRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiRepository.swift; sourceTree = "<group>"; };
+		FR0005AABBCCDDEE00112233 /* GenreLibraryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreLibraryRepository.swift; sourceTree = "<group>"; };
+		FR0006AABBCCDDEE00112233 /* GenreDescriptionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDescriptionRepository.swift; sourceTree = "<group>"; };
+		FR0007AABBCCDDEE00112233 /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		FR0008AABBCCDDEE00112233 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FR0009AABBCCDDEE00112233 /* TrackCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCardView.swift; sourceTree = "<group>"; };
+		FR0010AABBCCDDEE00112233 /* GenreDescriptionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreDescriptionCardView.swift; sourceTree = "<group>"; };
+		FR0011AABBCCDDEE00112233 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FR0012AABBCCDDEE00112233 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FR0013AABBCCDDEE00112233 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FW0001AABBCCDDEE00112233 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF0012AABBCCDDEE00112233 /* FirebaseCore in Frameworks */,
+				BF0013AABBCCDDEE00112233 /* FirebaseDatabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		GR0001AABBCCDDEE00112233 /* GenRemedy */ = {
+			isa = PBXGroup;
+			children = (
+				GR0002AABBCCDDEE00112233 /* App */,
+				GR0003AABBCCDDEE00112233 /* Models */,
+				GR0004AABBCCDDEE00112233 /* Repositories */,
+				GR0005AABBCCDDEE00112233 /* ViewModels */,
+				GR0006AABBCCDDEE00112233 /* Views */,
+				GR0007AABBCCDDEE00112233 /* Resources */,
+				1D9FE25A2FC1030B007EAA7B /* GoogleService-Info.plist */,
+			);
+			path = GenRemedy;
+			sourceTree = "<group>";
+		};
+		GR0002AABBCCDDEE00112233 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FR0001AABBCCDDEE00112233 /* GenRemedyApp.swift */,
+				FR0012AABBCCDDEE00112233 /* Info.plist */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		GR0003AABBCCDDEE00112233 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FR0002AABBCCDDEE00112233 /* SpotifyModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		GR0004AABBCCDDEE00112233 /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				FR0003AABBCCDDEE00112233 /* SpotifyRepository.swift */,
+				FR0004AABBCCDDEE00112233 /* GeminiRepository.swift */,
+				FR0005AABBCCDDEE00112233 /* GenreLibraryRepository.swift */,
+				FR0006AABBCCDDEE00112233 /* GenreDescriptionRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		GR0005AABBCCDDEE00112233 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FR0007AABBCCDDEE00112233 /* PlayerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		GR0006AABBCCDDEE00112233 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FR0008AABBCCDDEE00112233 /* ContentView.swift */,
+				FR0009AABBCCDDEE00112233 /* TrackCardView.swift */,
+				FR0010AABBCCDDEE00112233 /* GenreDescriptionCardView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		GR0007AABBCCDDEE00112233 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FR0011AABBCCDDEE00112233 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		GR0008AABBCCDDEE00112233 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FR0000AABBCCDDEE00112233 /* GenRemedy.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		GR0009AABBCCDDEE00112233 = {
+			isa = PBXGroup;
+			children = (
+				FR0013AABBCCDDEE00112233 /* Secrets.xcconfig */,
+				GR0001AABBCCDDEE00112233 /* GenRemedy */,
+				GR0008AABBCCDDEE00112233 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		TG0001AABBCCDDEE00112233 /* GenRemedy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL0002AABBCCDDEE00112233 /* Build configuration list for PBXNativeTarget "GenRemedy" */;
+			buildPhases = (
+				SR0001AABBCCDDEE00112233 /* Sources */,
+				FW0001AABBCCDDEE00112233 /* Frameworks */,
+				RS0001AABBCCDDEE00112233 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GenRemedy;
+			packageProductDependencies = (
+				SPM001AABBCCDDEE00112233 /* FirebaseCore */,
+				SPM002AABBCCDDEE00112233 /* FirebaseDatabase */,
+			);
+			productName = GenRemedy;
+			productReference = FR0000AABBCCDDEE00112233 /* GenRemedy.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		PJ0001AABBCCDDEE00112233 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					TG0001AABBCCDDEE00112233 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = CL0001AABBCCDDEE00112233 /* Build configuration list for PBXProject "GenRemedy" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = GR0009AABBCCDDEE00112233;
+			packageReferences = (
+				PKGAABBCCDDEE0011223300 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			productRefGroup = GR0008AABBCCDDEE00112233 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				TG0001AABBCCDDEE00112233 /* GenRemedy */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		RS0001AABBCCDDEE00112233 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF0011AABBCCDDEE00112233 /* Assets.xcassets in Resources */,
+				1D9FE25B2FC1030B007EAA7B /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		SR0001AABBCCDDEE00112233 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF0001AABBCCDDEE00112233 /* GenRemedyApp.swift in Sources */,
+				BF0002AABBCCDDEE00112233 /* SpotifyModels.swift in Sources */,
+				BF0003AABBCCDDEE00112233 /* SpotifyRepository.swift in Sources */,
+				BF0004AABBCCDDEE00112233 /* GeminiRepository.swift in Sources */,
+				BF0005AABBCCDDEE00112233 /* GenreLibraryRepository.swift in Sources */,
+				BF0006AABBCCDDEE00112233 /* GenreDescriptionRepository.swift in Sources */,
+				BF0007AABBCCDDEE00112233 /* PlayerViewModel.swift in Sources */,
+				BF0008AABBCCDDEE00112233 /* ContentView.swift in Sources */,
+				BF0009AABBCCDDEE00112233 /* TrackCardView.swift in Sources */,
+				BF0010AABBCCDDEE00112233 /* GenreDescriptionCardView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BC0001AABBCCDDEE00112233 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 2LD7M4NNUM;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BC0002AABBCCDDEE00112233 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2LD7M4NNUM;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		BC0003AABBCCDDEE00112233 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FR0013AABBCCDDEE00112233 /* Secrets.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GenRemedy/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.calebkortens.genremedy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BC0004AABBCCDDEE00112233 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FR0013AABBCCDDEE00112233 /* Secrets.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GenRemedy/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.calebkortens.genremedy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CL0001AABBCCDDEE00112233 /* Build configuration list for PBXProject "GenRemedy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC0001AABBCCDDEE00112233 /* Debug */,
+				BC0002AABBCCDDEE00112233 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CL0002AABBCCDDEE00112233 /* Build configuration list for PBXNativeTarget "GenRemedy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC0003AABBCCDDEE00112233 /* Debug */,
+				BC0004AABBCCDDEE00112233 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		PKGAABBCCDDEE0011223300 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		SPM001AABBCCDDEE00112233 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKGAABBCCDDEE0011223300 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		SPM002AABBCCDDEE00112233 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKGAABBCCDDEE0011223300 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = PJ0001AABBCCDDEE00112233 /* Project object */;
+}

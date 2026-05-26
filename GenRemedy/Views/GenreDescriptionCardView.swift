@@ -1,0 +1,24 @@
+import SwiftUI
+
+struct GenreDescriptionCardView: View {
+    let primaryGenre: String
+    let description: String
+    let isLoading: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(primaryGenre.capitalized)
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(Color(hex: "#7C3AED"))
+
+            Text(isLoading || description.isEmpty ? "Loading description..." : description)
+                .font(.body)
+                .foregroundColor(isLoading || description.isEmpty ? .gray : .white.opacity(0.85))
+                .lineSpacing(4)
+        }
+        .padding(20)
+        .background(Color(hex: "#2A2A2A"))
+        .cornerRadius(20)
+    }
+}
