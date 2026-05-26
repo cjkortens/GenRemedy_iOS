@@ -41,6 +41,8 @@ struct ContentView: View {
                             }
                         }
                     }
+                    
+                    Spacer()
                 }
                 .padding(.top, 8)
                 .padding(.horizontal, 16)
@@ -52,7 +54,6 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .clipped()
-        .ignoresSafeArea(.container, edges: .top)
         .background(Color(hex: "#1A1A1A").ignoresSafeArea())
         .preferredColorScheme(.dark)
         .onAppear {
