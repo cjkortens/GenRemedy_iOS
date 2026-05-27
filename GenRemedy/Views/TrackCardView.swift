@@ -27,7 +27,6 @@ struct TrackCardView: View {
             }
             .aspectRatio(1, contentMode: .fit)
             .frame(maxWidth: .infinity)
-            .fixedSize(horizontal: false, vertical: true)
             .clipShape(RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .center, spacing: 4) {
@@ -55,12 +54,12 @@ struct TrackCardView: View {
                 ProgressView()
                     .tint(.white)
             } else if !genres.isEmpty {
-                HStack(spacing: 8) {
+                ChipFlow(spacing: 8) {
                     ForEach(genres.prefix(3), id: \.self) { genre in
                         GenreChip(text: genre)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity)
             }
         }
         .padding(20)
@@ -79,12 +78,54 @@ struct GenreChip: View {
             .font(.caption)
             .fontWeight(.medium)
             .foregroundColor(.white)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
             .padding(.horizontal, 14)
             .padding(.vertical, 7)
             .background(genrePurple)
             .clipShape(Capsule())
+    }
+}
+
+private struct ChipFlow: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = makeRows(subviews: subviews, width: proposal.width ?? 0)
+        let height = rows.map { rowHeight($0) }.reduce(0, +) + CGFloat(max(0, rows.count - 1)) * spacing
+        return CGSize(width: proposal.width ?? 0, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for row in makeRows(subviews: subviews, width: bounds.width) {
+            let rw = row.map { $0.sizeThatFits(.unspecified).width }.reduce(0, +) + CGFloat(max(0, row.count - 1)) * spacing
+            var x = bounds.minX + (bounds.width - rw) / 2
+            let rh = rowHeight(row)
+            for subview in row {
+                let s = subview.sizeThatFits(.unspecified)
+                subview.place(at: CGPoint(x: x, y: y + (rh - s.height) / 2), proposal: ProposedViewSize(s))
+                x += s.width + spacing
+            }
+            y += rh + spacing
+        }
+    }
+
+    private func makeRows(subviews: Subviews, width: CGFloat) -> [[LayoutSubview]] {
+        var rows: [[LayoutSubview]] = [[]]
+        var x: CGFloat = 0
+        for sub in subviews {
+            let w = sub.sizeThatFits(.unspecified).width
+            if !rows[rows.count - 1].isEmpty && x + w > width {
+                rows.append([])
+                x = 0
+            }
+            rows[rows.count - 1].append(sub)
+            x += w + spacing
+        }
+        return rows.filter { !$0.isEmpty }
+    }
+
+    private func rowHeight(_ row: [LayoutSubview]) -> CGFloat {
+        row.map { $0.sizeThatFits(.unspecified).height }.max() ?? 0
     }
 }
 
