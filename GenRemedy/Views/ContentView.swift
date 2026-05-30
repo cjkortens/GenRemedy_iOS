@@ -4,56 +4,83 @@ struct ContentView: View {
     @EnvironmentObject var spotify: SpotifyRepository
     @StateObject private var viewModel = PlayerViewModel()
     @State private var trackCardHeight: CGFloat = 0
+    @State private var descriptionCardHeight: CGFloat = 0
+
+    private var topPadding: CGFloat {
+        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let inset = scene?.windows.first?.safeAreaInsets.top ?? 0
+        return inset > 0 ? inset + 8 : 20
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
             if !spotify.isAuthenticated {
                 loginView
             } else if let track = viewModel.currentTrack {
-                VStack(spacing: 16) {
-                    TrackCardView(
-                        track: track,
-                        genres: viewModel.genres,
-                        isLoadingGenres: viewModel.isLoadingGenres
-                    )
-                    .onGeometryChange(for: CGFloat.self) { proxy in
-                        proxy.size.height
-                    } action: { height in
-                        trackCardHeight = height
-                    }
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            viewModel.isDescriptionExpanded = false
-                        }
-                    }
-
-                    if let primaryGenre = viewModel.genres.first {
-                        GenreDescriptionCardView(
-                            primaryGenre: primaryGenre,
-                            description: viewModel.genreDescription,
-                            isLoading: viewModel.isLoadingDescription
+                GeometryReader { geometry in
+                    let safeTop = topPadding
+                    VStack(spacing: 16) {
+                        TrackCardView(
+                            track: track,
+                            genres: viewModel.genres,
+                            isLoadingGenres: viewModel.isLoadingGenres
                         )
                         .fixedSize(horizontal: false, vertical: true)
-                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        .onGeometryChange(for: CGFloat.self) { proxy in
+                            proxy.size.height
+                        } action: { height in
+                            trackCardHeight = height
+                        }
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.4)) {
-                                viewModel.isDescriptionExpanded = true
+                                viewModel.isDescriptionExpanded = false
+                            }
+                        }
+                        
+                        if let primaryGenre = viewModel.genres.first {
+                            GenreDescriptionCardView(
+                                primaryGenre: primaryGenre,
+                                description: viewModel.genreDescription,
+                                isLoading: viewModel.isLoadingDescription
+                            )
+                            .fixedSize(horizontal: false, vertical: true)
+                            .onGeometryChange(for: CGFloat.self) { proxy in
+                                proxy.size.height
+                            } action: { height in
+                                descriptionCardHeight = height
+                            }
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    viewModel.isDescriptionExpanded = true
+                                }
                             }
                         }
                     }
-                    
-                    Spacer()
+                    .padding(.top, safeTop)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .ignoresSafeArea(edges: .top)
+                    .gesture(
+                        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                            .onEnded { value in
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    viewModel.isDescriptionExpanded = value.translation.height < 0
+                                }
+                            }
+                    )
+                    .offset(y: viewModel.isDescriptionExpanded
+                        ? min(0, geometry.size.height - safeTop - trackCardHeight - 16 - descriptionCardHeight)
+                        : 0)
                 }
-                .padding(.top, 8)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-                .offset(y: viewModel.isDescriptionExpanded ? -(trackCardHeight + 24) : 0)
             } else {
                 idleView
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .clipped()
+        .ignoresSafeArea(.container, edges: .top)
         .background(Color(hex: "#1A1A1A").ignoresSafeArea())
         .preferredColorScheme(.dark)
         .onAppear {
@@ -61,7 +88,7 @@ struct ContentView: View {
                 viewModel.startPolling()
             }
         }
-        .onChange(of: spotify.isAuthenticated) { authenticated in
+        .onChange(of: spotify.isAuthenticated) { _, authenticated in
             if authenticated {
                 viewModel.startPolling()
             } else {

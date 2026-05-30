@@ -25,11 +25,10 @@ struct GeminiRepository {
 
     func describeGenre(_ genre: String) async throws -> String {
         let prompt = """
-            Write a 4 to 5 sentence description of the "\(genre)" music genre. \
-            Cover its origins, key characteristics, typical sounds or production style, \
-            and the feeling or atmosphere it evokes. \
-            Write in a clear, engaging style suitable for a music app. \
-            Do not use bullet points, headers, or any formatting — just plain flowing sentences.
+            Write exactly 2 sentences about the "\(genre)" music genre. \
+            Cover its defining sound and the feeling it evokes. \
+            Be concise — the entire response must be under 200 characters. \
+            No bullet points, headers, or extra formatting.
             """
         return try await fetchText(prompt: prompt, model: primaryModel)
     }
