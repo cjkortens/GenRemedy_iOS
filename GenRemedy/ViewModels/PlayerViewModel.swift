@@ -56,7 +56,6 @@ class PlayerViewModel: ObservableObject {
 
     private func resolveGenres(for track: TrackItem) async {
         isLoadingGenres = true
-        defer { isLoadingGenres = false }
 
         if let cached = await genreLibrary.fetchGenres(trackId: track.id) {
             genres = cached
@@ -68,9 +67,12 @@ class PlayerViewModel: ObservableObject {
                 genreLibrary.saveGenres(trackId: track.id, genres: fetched)
             } catch {
                 errorMessage = "Genre error: \(error.localizedDescription)"
+                isLoadingGenres = false
                 return
             }
         }
+
+        isLoadingGenres = false
 
         if let primary = genres.first, primary != lastPrimaryGenre {
             lastPrimaryGenre = primary

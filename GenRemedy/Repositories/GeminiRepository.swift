@@ -2,7 +2,7 @@ import Foundation
 
 struct GeminiRepository {
     private let apiKey: String
-    private let primaryModel = "gemini-3-flash-preview"
+    private let primaryModel = "gemini-3.5-flash"
     private let backupModel = "gemini-3.1-flash-lite-preview"
     private let baseURL = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -13,7 +13,9 @@ struct GeminiRepository {
     func classifyGenres(trackName: String, artistName: String) async throws -> [String] {
         let prompt = """
             You are a music genre expert. Given the song and artist below, list exactly 3 music genres \
-            that best describe this track (from most specific to most general). \
+            that best describe this track. \
+            Always prefer specific subgenres over broad umbrella terms — avoid vague labels like \
+            "electronic", "pop", "rock", or "music" unless no more specific genre applies. \
             Respond with ONLY a JSON array of 3 strings and nothing else. \
             Example: ["synthpop","electropop","pop"]
 
@@ -25,10 +27,12 @@ struct GeminiRepository {
 
     func describeGenre(_ genre: String) async throws -> String {
         let prompt = """
-            Write exactly 2 sentences about the "\(genre)" music genre. \
-            Cover its defining sound and the feeling it evokes. \
-            Be concise — the entire response must be under 200 characters. \
-            No bullet points, headers, or extra formatting.
+            Write a 4 to 5 sentence description of the "\(genre)" music genre. \
+            Cover its origins, key characteristics, typical sounds or production style, \
+            and the feeling or atmosphere it evokes. \
+            Write in a clear, engaging style suitable for a music app. \
+            Do not use bullet points, headers, or any formatting — just plain flowing sentences. \
+            The entire response must be under 600 characters.
             """
         return try await fetchText(prompt: prompt, model: primaryModel)
     }
@@ -71,6 +75,7 @@ struct GeminiRepository {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         let http = response as? HTTPURLResponse
+        print("[Gemini] model=\(model) status=\(http?.statusCode ?? -1)")
 
         if http?.statusCode == 503 && model == primaryModel {
             return try await fetchText(prompt: prompt, model: backupModel)

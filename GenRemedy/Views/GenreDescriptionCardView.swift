@@ -16,7 +16,7 @@ struct GenreDescriptionCardView: View {
                 .font(.subheadline)
                 .foregroundColor(isLoading || description.isEmpty ? .gray : .white.opacity(0.85))
                 .lineSpacing(3)
-                .lineLimit(10)
+                .lineLimit(15)
         }
         .padding(20)
         .background(Color(hex: "#2A2A2A"))

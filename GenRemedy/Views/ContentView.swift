@@ -6,19 +6,12 @@ struct ContentView: View {
     @State private var trackCardHeight: CGFloat = 0
     @State private var descriptionCardHeight: CGFloat = 0
 
-    private var topPadding: CGFloat {
-        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        let inset = scene?.windows.first?.safeAreaInsets.top ?? 0
-        return inset > 0 ? inset + 8 : 20
-    }
-
     var body: some View {
         ZStack(alignment: .top) {
             if !spotify.isAuthenticated {
                 loginView
             } else if let track = viewModel.currentTrack {
                 GeometryReader { geometry in
-                    let safeTop = topPadding
                     VStack(spacing: 16) {
                         TrackCardView(
                             track: track,
@@ -57,11 +50,10 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .padding(.top, safeTop)
+                    .padding(.top, 8)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .ignoresSafeArea(edges: .top)
                     .gesture(
                         DragGesture(minimumDistance: 30, coordinateSpace: .local)
                             .onEnded { value in
@@ -71,7 +63,7 @@ struct ContentView: View {
                             }
                     )
                     .offset(y: viewModel.isDescriptionExpanded
-                        ? min(0, geometry.size.height - safeTop - trackCardHeight - 16 - descriptionCardHeight)
+                        ? min(0, geometry.size.height - trackCardHeight - 16 - descriptionCardHeight)
                         : 0)
                 }
             } else {
@@ -80,7 +72,6 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .clipped()
-        .ignoresSafeArea(.container, edges: .top)
         .background(Color(hex: "#1A1A1A").ignoresSafeArea())
         .preferredColorScheme(.dark)
         .onAppear {
