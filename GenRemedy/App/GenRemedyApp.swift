@@ -3,7 +3,7 @@ import FirebaseCore
 
 @main
 struct GenRemedyApp: App {
-    @StateObject private var spotify = SpotifyRepository.shared
+    @State private var spotify = SpotifyRepository.shared
 
     init() {
         if Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil {
@@ -15,7 +15,7 @@ struct GenRemedyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(spotify)
+                .environment(spotify)
                 .onOpenURL { url in
                     Task { @MainActor in
                         await spotify.handleCallback(url: url)

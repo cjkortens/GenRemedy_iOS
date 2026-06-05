@@ -86,13 +86,9 @@ struct GeminiRepository {
             return try await fetchGenresAdvanced(prompt: prompt, systemInstruction: systemInstruction, config: config, model: backupModel)
         }
 
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        guard let candidates = json?["candidates"] as? [[String: Any]],
-              let content = candidates.first?["content"] as? [String: Any],
-              let parts = content["parts"] as? [[String: Any]],
-              let text = parts.first?["text"] as? String,
-              let cleanData = text.trimmingCharacters(in: .whitespacesAndNewlines).data(using: .utf8),
-              let genres = try? JSONDecoder().decode([String].self, from: cleanData),
+        guard let text = try? JSONDecoder().decode(GeminiResponse.self, from: data).candidates.first?.content.parts.first?.text,
+              let genreData = text.trimmingCharacters(in: .whitespacesAndNewlines).data(using: .utf8),
+              let genres = try? JSONDecoder().decode([String].self, from: genreData),
               genres.count == 3
         else {
             if model == primaryModel {
@@ -124,11 +120,7 @@ struct GeminiRepository {
             return try await fetchText(prompt: prompt, model: backupModel)
         }
 
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        guard let candidates = json?["candidates"] as? [[String: Any]],
-              let content = candidates.first?["content"] as? [String: Any],
-              let parts = content["parts"] as? [[String: Any]],
-              let text = parts.first?["text"] as? String
+        guard let text = try? JSONDecoder().decode(GeminiResponse.self, from: data).candidates.first?.content.parts.first?.text
         else { throw GeminiError.parseError }
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -137,4 +129,20 @@ struct GeminiRepository {
 enum GeminiError: Error {
     case invalidURL
     case parseError
+}
+
+private struct GeminiResponse: Decodable {
+    let candidates: [GeminiCandidate]
+}
+
+private struct GeminiCandidate: Decodable {
+    let content: GeminiContent
+}
+
+private struct GeminiContent: Decodable {
+    let parts: [GeminiPart]
+}
+
+private struct GeminiPart: Decodable {
+    let text: String
 }

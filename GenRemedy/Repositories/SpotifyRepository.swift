@@ -2,7 +2,8 @@ import Foundation
 import AuthenticationServices
 
 @MainActor
-class SpotifyRepository: NSObject, ObservableObject {
+@Observable
+class SpotifyRepository: NSObject {
     static let shared = SpotifyRepository()
 
     private let clientId: String
@@ -12,7 +13,8 @@ class SpotifyRepository: NSObject, ObservableObject {
     private let tokenKey = "spotify_access_token"
     private let refreshTokenKey = "spotify_refresh_token"
 
-    @Published var isAuthenticated = false
+    var isAuthenticated = false
+    var authError: String?
     private var accessToken: String?
     private var webAuthSession: ASWebAuthenticationSession?
     nonisolated(unsafe) private var storedAnchor: ASPresentationAnchor?
@@ -54,14 +56,28 @@ class SpotifyRepository: NSObject, ObservableObject {
     func handleCallback(url: URL) async {
         guard let code = URLComponents(url: url, resolvingAgainstBaseURL: false)?
             .queryItems?.first(where: { $0.name == "code" })?.value
-        else { return }
-        await exchangeCode(code)
+        else {
+            authError = "Login failed: missing authorization code"
+            return
+        }
+        do {
+            try await exchangeCode(code)
+            authError = nil
+        } catch let error as SpotifyError {
+            authError = error.localizedDescription
+        } catch {
+            authError = "Login failed: \(error.localizedDescription)"
+        }
     }
 
-    private func exchangeCode(_ code: String) async {
-        guard let url = URL(string: "https://accounts.spotify.com/api/token") else { return }
+    private func exchangeCode(_ code: String) async throws {
+        guard let url = URL(string: "https://accounts.spotify.com/api/token") else {
+            throw SpotifyError.invalidTokenURL
+        }
         let credentials = "\(clientId):\(clientSecret)"
-        guard let credData = credentials.data(using: .utf8) else { return }
+        guard let credData = credentials.data(using: .utf8) else {
+            throw SpotifyError.invalidCredentials
+        }
         let b64 = credData.base64EncodedString()
 
         var request = URLRequest(url: url)
@@ -74,18 +90,14 @@ class SpotifyRepository: NSObject, ObservableObject {
         let body = "grant_type=authorization_code&code=\(encodedCode)&redirect_uri=\(encodedRedirect)"
         request.httpBody = body.data(using: .utf8)
 
-        do {
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let tokenResponse = try JSONDecoder().decode(SpotifyUserTokenResponse.self, from: data)
-            accessToken = tokenResponse.accessToken
-            KeychainHelper.save(key: tokenKey, value: tokenResponse.accessToken)
-            if let refresh = tokenResponse.refreshToken {
-                KeychainHelper.save(key: refreshTokenKey, value: refresh)
-            }
-            isAuthenticated = true
-        } catch {
-            print("Token exchange error: \(error)")
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let tokenResponse = try JSONDecoder().decode(SpotifyUserTokenResponse.self, from: data)
+        accessToken = tokenResponse.accessToken
+        KeychainHelper.save(key: tokenKey, value: tokenResponse.accessToken)
+        if let refresh = tokenResponse.refreshToken {
+            KeychainHelper.save(key: refreshTokenKey, value: refresh)
         }
+        isAuthenticated = true
     }
 
     func fetchCurrentlyPlaying() async throws -> CurrentlyPlayingResponse? {
@@ -118,6 +130,20 @@ class SpotifyRepository: NSObject, ObservableObject {
 extension SpotifyRepository: ASWebAuthenticationPresentationContextProviding {
     nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         storedAnchor!
+    }
+}
+
+enum SpotifyError: LocalizedError {
+    case invalidTokenURL
+    case invalidCredentials
+    case tokenDecodeFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidTokenURL: "Invalid token endpoint URL"
+        case .invalidCredentials: "Could not encode client credentials"
+        case .tokenDecodeFailed: "Failed to decode token response"
+        }
     }
 }
 
