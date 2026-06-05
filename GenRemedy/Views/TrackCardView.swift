@@ -26,7 +26,7 @@ struct TrackCardView: View {
                 Color.gray.opacity(0.3)
             }
             .aspectRatio(1, contentMode: .fit)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: 320)
             .clipShape(RoundedRectangle(cornerRadius: 12))
 
             VStack(alignment: .center, spacing: 4) {

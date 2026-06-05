@@ -11,18 +11,42 @@ struct GeminiRepository {
     }
 
     func classifyGenres(trackName: String, artistName: String) async throws -> [String] {
-        let prompt = """
-            You are a music genre expert. Given the song and artist below, list exactly 3 music genres \
-            that best describe this track. \
-            Always prefer specific subgenres over broad umbrella terms — avoid vague labels like \
-            "electronic", "pop", "rock", or "music" unless no more specific genre applies. \
-            Respond with ONLY a JSON array of 3 strings and nothing else. \
-            Example: ["synthpop","electropop","pop"]
+        let systemInstruction = """
+            You are a master musicologist and music history expert. Your sole task is to analyze the musical DNA of a given song and provide its top 3 most precise genres or subgenres.
 
-            Song: "\(trackName)"
-            Artist: "\(artistName)"
+            For every track provided, mentally evaluate its core sonic characteristics across all musical traditions:
+            1. Instrumentation & Timbre: Identify primary sound sources, whether they are acoustic (e.g., brass, upright bass, piano), electric (e.g., high-gain distorted guitars, analog synths), or digital/synthetic (e.g., 808 sub-bass, 8-bit chiptune plucks, side-chained supersaws).
+            2. Rhythmic Foundation & Tempo: Analyze the drum architecture and groove pattern (e.g., syncopated hip-hop boom-bap, rapid metal double-bass, swing-time jazz, 4x4 electronic house pulse, or driving rock backbeat).
+            3. Vocal Style & Processing: Evaluate how the vocal is presented (e.g., raw and acoustic, auto-tuned melodic rap, multi-layered pop harmony, screaming/growling, or rhythmic patois).
+            4. Cultural & Era Context: Factor in the artist's historical catalog and label alignment to differentiate between eras (e.g., 90s grunge vs. modern indie rock, classic east-coast rap vs. modern trap).
+
+            Avoid vague, overarching classifications. Do not return umbrella terms like "Electronic", "Pop", "Rock", "Hip-Hop", or "Jazz" unless a track truly cannot be broken down into a definitive, recognized subgenre (e.g., prefer "Synthpop", "Boom-Bap", "Pop Punk", "Hard Bop", or "Slap House").
             """
-        return try await fetchGenres(prompt: prompt, model: primaryModel)
+        
+        let prompt = "Song: \"\(trackName)\"\nArtist: \"\(artistName)\""
+        
+        // Define the strict JSON schema forcing an array of strings
+        let jsonSchema: [String: Any] = [
+            "type": "ARRAY",
+            "description": "Exactly 3 of the most precise music subgenres for the track.",
+            "items": [
+                "type": "STRING"
+            ]
+        ]
+        
+        // Configuration block to enforce JSON mode and schema constraint
+        let generationConfig: [String: Any] = [
+            "temperature": 0.1, // Drastically lowers randomness for strict classification
+            "responseMimeType": "application/json",
+            "responseSchema": jsonSchema
+        ]
+        
+        return try await fetchGenresAdvanced(
+            prompt: prompt,
+            systemInstruction: systemInstruction,
+            config: generationConfig,
+            model: primaryModel
+        )
     }
 
     func describeGenre(_ genre: String) async throws -> String {
@@ -37,30 +61,45 @@ struct GeminiRepository {
         return try await fetchText(prompt: prompt, model: primaryModel)
     }
 
-    private func fetchGenres(prompt: String, model: String) async throws -> [String] {
-        let text = try await fetchText(prompt: prompt, model: model)
-        guard let startIdx = text.firstIndex(of: "["),
-              let endIdx = text.lastIndex(of: "]"),
-              startIdx <= endIdx
-        else {
-            if model == primaryModel {
-                return try await fetchGenres(prompt: prompt, model: backupModel)
-            }
-            throw GeminiError.parseError
+    // New advanced fetch helper specifically handling system instructions and schemas
+    private func fetchGenresAdvanced(prompt: String, systemInstruction: String, config: [String: Any], model: String) async throws -> [String] {
+        guard let url = URL(string: "\(baseURL)/\(model):generateContent?key=\(apiKey)") else {
+            throw GeminiError.invalidURL
         }
-        let jsonSlice = String(text[startIdx...endIdx])
-        guard let data = jsonSlice.data(using: .utf8),
-              let genres = try? JSONDecoder().decode([String].self, from: data),
+        
+        let body: [String: Any] = [
+            "contents": [["parts": [["text": prompt]]]],
+            "systemInstruction": ["parts": [["text": systemInstruction]]],
+            "generationConfig": config
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let http = response as? HTTPURLResponse
+        print("[Gemini Advanced] model=\(model) status=\(http?.statusCode ?? -1)")
+
+        if http?.statusCode == 503 && model == primaryModel {
+            return try await fetchGenresAdvanced(prompt: prompt, systemInstruction: systemInstruction, config: config, model: backupModel)
+        }
+
+        guard let text = try? JSONDecoder().decode(GeminiResponse.self, from: data).candidates.first?.content.parts.first?.text,
+              let genreData = text.trimmingCharacters(in: .whitespacesAndNewlines).data(using: .utf8),
+              let genres = try? JSONDecoder().decode([String].self, from: genreData),
               genres.count == 3
         else {
             if model == primaryModel {
-                return try await fetchGenres(prompt: prompt, model: backupModel)
+                return try await fetchGenresAdvanced(prompt: prompt, systemInstruction: systemInstruction, config: config, model: backupModel)
             }
             throw GeminiError.parseError
         }
         return genres
     }
 
+    // Retained for your standard describeGenre call
     private func fetchText(prompt: String, model: String) async throws -> String {
         guard let url = URL(string: "\(baseURL)/\(model):generateContent?key=\(apiKey)") else {
             throw GeminiError.invalidURL
@@ -81,11 +120,7 @@ struct GeminiRepository {
             return try await fetchText(prompt: prompt, model: backupModel)
         }
 
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        guard let candidates = json?["candidates"] as? [[String: Any]],
-              let content = candidates.first?["content"] as? [String: Any],
-              let parts = content["parts"] as? [[String: Any]],
-              let text = parts.first?["text"] as? String
+        guard let text = try? JSONDecoder().decode(GeminiResponse.self, from: data).candidates.first?.content.parts.first?.text
         else { throw GeminiError.parseError }
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -94,4 +129,20 @@ struct GeminiRepository {
 enum GeminiError: Error {
     case invalidURL
     case parseError
+}
+
+private struct GeminiResponse: Decodable {
+    let candidates: [GeminiCandidate]
+}
+
+private struct GeminiCandidate: Decodable {
+    let content: GeminiContent
+}
+
+private struct GeminiContent: Decodable {
+    let parts: [GeminiPart]
+}
+
+private struct GeminiPart: Decodable {
+    let text: String
 }
