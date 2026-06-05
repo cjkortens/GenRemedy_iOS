@@ -6,6 +6,15 @@ struct ContentView: View {
     @State private var trackCardHeight: CGFloat = 0
     @State private var descriptionCardHeight: CGFloat = 0
 
+    // Layout constants shared between the VStack's padding/spacing and the
+    // expand offset math, so the two can't drift apart across devices.
+    private enum Layout {
+        static let cardSpacing: CGFloat = 16
+        static let topPadding: CGFloat = 8
+        static let horizontalPadding: CGFloat = 16
+        static let bottomPadding: CGFloat = 16
+    }
+
     var body: some View {
         ZStack(alignment: .top) {
             if !spotify.isAuthenticated {
@@ -39,7 +48,7 @@ struct ContentView: View {
     private var playerView: some View {
         if let track = viewModel.currentTrack {
             GeometryReader { geometry in
-                VStack(spacing: 16) {
+                VStack(spacing: Layout.cardSpacing) {
                     TrackCardView(
                         track: track,
                         genres: viewModel.genres,
@@ -77,9 +86,9 @@ struct ContentView: View {
                         }
                     }
                 }
-                .padding(.top, 8)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+                .padding(.top, Layout.topPadding)
+                .padding(.horizontal, Layout.horizontalPadding)
+                .padding(.bottom, Layout.bottomPadding)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .gesture(
                     DragGesture(minimumDistance: 30, coordinateSpace: .local)
@@ -90,7 +99,12 @@ struct ContentView: View {
                         }
                 )
                 .offset(y: viewModel.isDescriptionExpanded
-                    ? min(0, geometry.size.height - trackCardHeight - 16 - descriptionCardHeight)
+                    ? min(0, geometry.size.height
+                        - Layout.topPadding
+                        - trackCardHeight
+                        - Layout.cardSpacing
+                        - descriptionCardHeight
+                        - Layout.bottomPadding)
                     : 0)
             }
         } else {
