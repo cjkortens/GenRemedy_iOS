@@ -1,14 +1,15 @@
 import SwiftUI
 
 @MainActor
-class PlayerViewModel: ObservableObject {
-    @Published var currentTrack: TrackItem?
-    @Published var genres: [String] = []
-    @Published var genreDescription: String = ""
-    @Published var isLoadingGenres = false
-    @Published var isLoadingDescription = false
-    @Published var isDescriptionExpanded = false
-    @Published var errorMessage: String?
+@Observable
+class PlayerViewModel {
+    var currentTrack: TrackItem?
+    var genres: [String] = []
+    var genreDescription: String = ""
+    var isLoadingGenres = false
+    var isLoadingDescription = false
+    var isDescriptionExpanded = false
+    var errorMessage: String?
 
     private var lastTrackId: String?
     private var lastPrimaryGenre: String?
