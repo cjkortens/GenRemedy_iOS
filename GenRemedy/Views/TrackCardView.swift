@@ -68,7 +68,7 @@ struct TrackCardView: View {
     }
 }
 
-private let genrePurple = Color(hex: "#7C3AED")
+private let genrePurple = Color.brandPurple
 
 struct GenreChip: View {
     let text: String
@@ -139,4 +139,10 @@ extension Color {
         let b = Double(int & 0xFF) / 255
         self.init(red: r, green: g, blue: b)
     }
+
+    // Brand purples sampled from the GenRemedy logo (magenta-leaning orchid),
+    // used everywhere the UI needs the accent so the hue stays consistent.
+    static let brandPurple = Color(hex: "#9E47A4")      // mid: chips, accents
+    static let brandPurpleLight = Color(hex: "#B265CC") // gradient highlight
+    static let brandPurpleDeep = Color(hex: "#82397F")  // gradient shadow
 }

@@ -10,7 +10,7 @@ struct GenreDescriptionCardView: View {
             Text(primaryGenre.capitalized)
                 .font(.headline)
                 .fontWeight(.bold)
-                .foregroundColor(Color(hex: "#7C3AED"))
+                .foregroundColor(.brandPurple)
 
             Text(isLoading || description.isEmpty ? "Loading description..." : description)
                 .font(.subheadline)

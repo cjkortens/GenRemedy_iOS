@@ -113,21 +113,36 @@ struct ContentView: View {
     }
 
     private var loginView: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 28) {
             Spacer()
-            Image(systemName: "music.note.list")
-                .font(.system(size: 64))
-                .foregroundColor(Color.accentColor)
 
-            Text("GenRemedy")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
+            // Brand logo with a soft purple glow
+            Image("LogoMark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 168, height: 168)
+                .shadow(color: Color.brandPurple.opacity(0.45), radius: 28, x: 0, y: 12)
 
-            Text("Discover the genre of what you're listening to")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
+            VStack(spacing: 14) {
+                Text("GenRemedy")
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.92))
+                    .kerning(0.5)
+
+                Capsule()
+                    .fill(Color.brandPurple)
+                    .frame(width: 44, height: 4)
+
+                Text("Know your Sound")
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Two trailing spacers to one leading: lifts the logo + title into
+            // the upper third so the screen isn't bottom-heavy under the button.
+            Spacer()
+            Spacer()
 
             Button {
                 guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -135,43 +150,73 @@ struct ContentView: View {
                 else { return }
                 spotify.startOAuth(presentationAnchor: window)
             } label: {
-                Label("Connect Spotify", systemImage: "link")
-                    .fontWeight(.semibold)
+                Text("Connect with Spotify")
+                    .font(.headline)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(hex: "#1DB954"))
-                    .foregroundColor(.white)
-                    .cornerRadius(14)
+                    .padding(.vertical, 16)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.brandPurpleLight, Color.brandPurpleDeep],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+                    .shadow(color: Color.brandPurple.opacity(0.4), radius: 16, x: 0, y: 8)
             }
-            .padding(.horizontal, 40)
-            Spacer()
+            .padding(.horizontal, 32)
+            .padding(.bottom, 16)
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: "#281A2B"), Color(hex: "#1A1A1A")],
+                startPoint: .top,
+                endPoint: .center
+            )
+            .ignoresSafeArea()
+        )
     }
 
     private var idleView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 28) {
             Spacer()
-            Image(systemName: "waveform")
-                .font(.system(size: 48))
-                .foregroundColor(.gray)
-            Text("Nothing playing")
-                .font(.headline)
-                .foregroundColor(.gray)
-            Text("Play a track in Spotify to get started")
-                .font(.subheadline)
-                .foregroundColor(.gray.opacity(0.7))
-                .multilineTextAlignment(.center)
 
-            Button("Sign Out") {
-                spotify.signOut()
+            Image(systemName: "waveform")
+                .font(.system(size: 56, weight: .light))
+                .foregroundStyle(Color.brandPurpleLight)
+                .shadow(color: Color.brandPurple.opacity(0.5), radius: 24, x: 0, y: 8)
+
+            VStack(spacing: 14) {
+                Text("Nothing playing")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.92))
+                    .kerning(0.5)
+
+                Capsule()
+                    .fill(Color.brandPurple)
+                    .frame(width: 44, height: 4)
+
+                Text("Play a track in Spotify to get started")
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+                    .multilineTextAlignment(.center)
             }
-            .font(.caption)
-            .foregroundColor(.gray)
-            .padding(.top, 32)
+
             Spacer()
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: "#281A2B"), Color(hex: "#1A1A1A")],
+                startPoint: .top,
+                endPoint: .center
+            )
+            .ignoresSafeArea()
+        )
     }
 }
 
