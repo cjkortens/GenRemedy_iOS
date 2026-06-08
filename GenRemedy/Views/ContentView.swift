@@ -55,11 +55,7 @@ struct ContentView: View {
                         isLoadingGenres: viewModel.isLoadingGenres
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    .onGeometryChange(for: CGFloat.self) { proxy in
-                        proxy.size.height
-                    } action: { height in
-                        trackCardHeight = height
-                    }
+                    .measureHeight(into: $trackCardHeight)
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.4)) {
                             viewModel.isDescriptionExpanded = false
@@ -73,11 +69,7 @@ struct ContentView: View {
                             isLoading: viewModel.isLoadingDescription
                         )
                         .fixedSize(horizontal: false, vertical: true)
-                        .onGeometryChange(for: CGFloat.self) { proxy in
-                            proxy.size.height
-                        } action: { height in
-                            descriptionCardHeight = height
-                        }
+                        .measureHeight(into: $descriptionCardHeight)
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.4)) {
@@ -106,6 +98,14 @@ struct ContentView: View {
                         - descriptionCardHeight
                         - Layout.bottomPadding)
                     : 0)
+                .overlay(alignment: .topTrailing) {
+                    // Load-bearing, intentionally hidden: `measureHeight` only keeps
+                    // trackCardHeight/descriptionCardHeight up to date while a *rendered*
+                    // view consumes them. Without this reader the expand offset above
+                    // stays at 0 and the cards won't toggle until the next track reloads.
+                    Text("\(Int(trackCardHeight)) \(Int(descriptionCardHeight)) \(Int(geometry.size.height))")
+                        .hidden()
+                }
             }
         } else {
             idleView
@@ -172,5 +172,21 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
+    }
+}
+
+private extension View {
+    /// Reports this view's height into `binding`, firing on the initial layout
+    /// (via `onAppear`) as well as on later size changes.
+    func measureHeight(into binding: Binding<CGFloat>) -> some View {
+        background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear { binding.wrappedValue = proxy.size.height }
+                    .onChange(of: proxy.size.height) { _, newHeight in
+                        binding.wrappedValue = newHeight
+                    }
+            }
+        )
     }
 }
