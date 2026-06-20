@@ -13,6 +13,7 @@ class PlayerViewModel {
     private var lastTrackId: String?
     private var lastPrimaryGenre: String?
     private var pollingTask: Task<Void, Never>?
+    private var isFetching = false
 
     private let spotify = SpotifyRepository.shared
     private let gemini = GeminiRepository()
@@ -34,7 +35,18 @@ class PlayerViewModel {
         pollingTask = nil
     }
 
+    /// Forces an immediate Spotify check and resets the auto-poll countdown.
+    /// Restarting the loop both fetches now and avoids a near-duplicate poll
+    /// firing right after; the in-flight guard collapses rapid taps.
+    func refresh() {
+        startPolling()
+    }
+
     private func fetchCurrentTrack() async {
+        guard !isFetching else { return }
+        isFetching = true
+        defer { isFetching = false }
+
         do {
             guard let response = try await spotify.fetchCurrentlyPlaying(),
                   response.isPlaying,

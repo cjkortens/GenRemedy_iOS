@@ -89,6 +89,12 @@ struct ContentView: View {
                 }
                 .scrollIndicators(.hidden)
                 .scrollBounceBehavior(.basedOnSize)
+                // Tap anywhere (cards or empty space) forces an immediate
+                // refresh. Simultaneous so it fires alongside the cards' own
+                // snap-scroll taps and never blocks scroll-drag.
+                .simultaneousGesture(TapGesture().onEnded {
+                    viewModel.refresh()
+                })
                 // A new track resets focus to the top (track) card.
                 .onChange(of: viewModel.currentTrack?.id) {
                     withAnimation(Layout.snap) {
@@ -206,5 +212,10 @@ struct ContentView: View {
             )
             .ignoresSafeArea()
         )
+        // Tap anywhere to force an immediate check for a newly started track.
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.refresh()
+        }
     }
 }
