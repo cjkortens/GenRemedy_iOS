@@ -8,12 +8,12 @@ class PlayerViewModel {
     var genreDescription: String = ""
     var isLoadingGenres = false
     var isLoadingDescription = false
-    var isDescriptionExpanded = false
     var errorMessage: String?
 
     private var lastTrackId: String?
     private var lastPrimaryGenre: String?
     private var pollingTask: Task<Void, Never>?
+    private var isFetching = false
 
     private let spotify = SpotifyRepository.shared
     private let gemini = GeminiRepository()
@@ -35,7 +35,18 @@ class PlayerViewModel {
         pollingTask = nil
     }
 
+    /// Forces an immediate Spotify check and resets the auto-poll countdown.
+    /// Restarting the loop both fetches now and avoids a near-duplicate poll
+    /// firing right after; the in-flight guard collapses rapid taps.
+    func refresh() {
+        startPolling()
+    }
+
     private func fetchCurrentTrack() async {
+        guard !isFetching else { return }
+        isFetching = true
+        defer { isFetching = false }
+
         do {
             guard let response = try await spotify.fetchCurrentlyPlaying(),
                   response.isPlaying,
@@ -46,8 +57,9 @@ class PlayerViewModel {
                 currentTrack = track
                 lastTrackId = track.id
                 genres = []
-                genreDescription = ""
-                isDescriptionExpanded = false
+                // Keep the current description; resolveGenres reloads it only
+                // if the new track's top genre differs (or none is loaded yet),
+                // so back-to-back same-genre tracks reuse it instantly.
                 await resolveGenres(for: track)
             }
         } catch {
@@ -75,8 +87,12 @@ class PlayerViewModel {
 
         isLoadingGenres = false
 
-        if let primary = genres.first, primary != lastPrimaryGenre {
+        // Reload the description when the top genre changes, or when none has
+        // loaded yet (e.g. a prior fetch failed). Otherwise the existing one
+        // already matches this genre, so keep it.
+        if let primary = genres.first, primary != lastPrimaryGenre || genreDescription.isEmpty {
             lastPrimaryGenre = primary
+            genreDescription = ""
             await resolveDescription(for: primary)
         }
     }

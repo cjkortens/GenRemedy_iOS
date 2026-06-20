@@ -3,16 +3,19 @@ import SwiftUI
 struct ContentView: View {
     @Environment(SpotifyRepository.self) var spotify
     @State private var viewModel = PlayerViewModel()
-    @State private var trackCardHeight: CGFloat = 0
-    @State private var descriptionCardHeight: CGFloat = 0
 
-    // Layout constants shared between the VStack's padding/spacing and the
-    // expand offset math, so the two can't drift apart across devices.
+    // Scroll anchors for the two cards, used to snap the stack between the
+    // track card (top) and the genre description (bottom) on tap.
+    private enum Anchor {
+        case track, description
+    }
+
     private enum Layout {
         static let cardSpacing: CGFloat = 16
         static let topPadding: CGFloat = 8
         static let horizontalPadding: CGFloat = 16
         static let bottomPadding: CGFloat = 16
+        static let snap = Animation.easeInOut(duration: 0.4)
     }
 
     var body: some View {
@@ -47,65 +50,57 @@ struct ContentView: View {
     @ViewBuilder
     private var playerView: some View {
         if let track = viewModel.currentTrack {
-            GeometryReader { geometry in
-                VStack(spacing: Layout.cardSpacing) {
-                    TrackCardView(
-                        track: track,
-                        genres: viewModel.genres,
-                        isLoadingGenres: viewModel.isLoadingGenres
-                    )
-                    .fixedSize(horizontal: false, vertical: true)
-                    .onGeometryChange(for: CGFloat.self) { proxy in
-                        proxy.size.height
-                    } action: { height in
-                        trackCardHeight = height
-                    }
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            viewModel.isDescriptionExpanded = false
-                        }
-                    }
-
-                    if let primaryGenre = viewModel.genres.first {
-                        GenreDescriptionCardView(
-                            primaryGenre: primaryGenre,
-                            description: viewModel.genreDescription,
-                            isLoading: viewModel.isLoadingDescription
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: Layout.cardSpacing) {
+                        TrackCardView(
+                            track: track,
+                            genres: viewModel.genres,
+                            isLoadingGenres: viewModel.isLoadingGenres
                         )
                         .fixedSize(horizontal: false, vertical: true)
-                        .onGeometryChange(for: CGFloat.self) { proxy in
-                            proxy.size.height
-                        } action: { height in
-                            descriptionCardHeight = height
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        .id(Anchor.track)
                         .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                viewModel.isDescriptionExpanded = true
+                            withAnimation(Layout.snap) {
+                                proxy.scrollTo(Anchor.track, anchor: .top)
+                            }
+                        }
+
+                        if let primaryGenre = viewModel.genres.first {
+                            GenreDescriptionCardView(
+                                primaryGenre: primaryGenre,
+                                description: viewModel.genreDescription,
+                                isLoading: viewModel.isLoadingDescription
+                            )
+                            .fixedSize(horizontal: false, vertical: true)
+                            .id(Anchor.description)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .onTapGesture {
+                                withAnimation(Layout.snap) {
+                                    proxy.scrollTo(Anchor.description, anchor: .bottom)
+                                }
                             }
                         }
                     }
+                    .padding(.top, Layout.topPadding)
+                    .padding(.horizontal, Layout.horizontalPadding)
+                    .padding(.bottom, Layout.bottomPadding)
+                    .frame(maxWidth: .infinity, alignment: .top)
                 }
-                .padding(.top, Layout.topPadding)
-                .padding(.horizontal, Layout.horizontalPadding)
-                .padding(.bottom, Layout.bottomPadding)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .gesture(
-                    DragGesture(minimumDistance: 30, coordinateSpace: .local)
-                        .onEnded { value in
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                viewModel.isDescriptionExpanded = value.translation.height < 0
-                            }
-                        }
-                )
-                .offset(y: viewModel.isDescriptionExpanded
-                    ? min(0, geometry.size.height
-                        - Layout.topPadding
-                        - trackCardHeight
-                        - Layout.cardSpacing
-                        - descriptionCardHeight
-                        - Layout.bottomPadding)
-                    : 0)
+                .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
+                // Tap anywhere (cards or empty space) forces an immediate
+                // refresh. Simultaneous so it fires alongside the cards' own
+                // snap-scroll taps and never blocks scroll-drag.
+                .simultaneousGesture(TapGesture().onEnded {
+                    viewModel.refresh()
+                })
+                // A new track resets focus to the top (track) card.
+                .onChange(of: viewModel.currentTrack?.id) {
+                    withAnimation(Layout.snap) {
+                        proxy.scrollTo(Anchor.track, anchor: .top)
+                    }
+                }
             }
         } else {
             idleView
@@ -113,21 +108,36 @@ struct ContentView: View {
     }
 
     private var loginView: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 28) {
             Spacer()
-            Image(systemName: "music.note.list")
-                .font(.system(size: 64))
-                .foregroundColor(Color.accentColor)
 
-            Text("GenRemedy")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
+            // Brand logo with a soft purple glow
+            Image("LogoMark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 168, height: 168)
+                .shadow(color: Color.brandPurple.opacity(0.45), radius: 28, x: 0, y: 12)
 
-            Text("Discover the genre of what you're listening to")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
+            VStack(spacing: 14) {
+                Text("GenRemedy")
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.92))
+                    .kerning(0.5)
+
+                Capsule()
+                    .fill(Color.brandPurple)
+                    .frame(width: 44, height: 4)
+
+                Text("Know your Sound")
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Two trailing spacers to one leading: lifts the logo + title into
+            // the upper third so the screen isn't bottom-heavy under the button.
+            Spacer()
+            Spacer()
 
             Button {
                 guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -135,42 +145,77 @@ struct ContentView: View {
                 else { return }
                 spotify.startOAuth(presentationAnchor: window)
             } label: {
-                Label("Connect Spotify", systemImage: "link")
-                    .fontWeight(.semibold)
+                Text("Connect with Spotify")
+                    .font(.headline)
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(hex: "#1DB954"))
-                    .foregroundColor(.white)
-                    .cornerRadius(14)
+                    .padding(.vertical, 16)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.brandPurpleLight, Color.brandPurpleDeep],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+                    .shadow(color: Color.brandPurple.opacity(0.4), radius: 16, x: 0, y: 8)
             }
-            .padding(.horizontal, 40)
-            Spacer()
+            .padding(.horizontal, 32)
+            .padding(.bottom, 16)
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: "#281A2B"), Color(hex: "#1A1A1A")],
+                startPoint: .top,
+                endPoint: .center
+            )
+            .ignoresSafeArea()
+        )
     }
 
     private var idleView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 28) {
             Spacer()
-            Image(systemName: "waveform")
-                .font(.system(size: 48))
-                .foregroundColor(.gray)
-            Text("Nothing playing")
-                .font(.headline)
-                .foregroundColor(.gray)
-            Text("Play a track in Spotify to get started")
-                .font(.subheadline)
-                .foregroundColor(.gray.opacity(0.7))
-                .multilineTextAlignment(.center)
 
-            Button("Sign Out") {
-                spotify.signOut()
+            Image(systemName: "waveform")
+                .font(.system(size: 56, weight: .light))
+                .foregroundStyle(Color.brandPurpleLight)
+                .shadow(color: Color.brandPurple.opacity(0.5), radius: 24, x: 0, y: 8)
+
+            VStack(spacing: 14) {
+                Text("Nothing playing")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.92))
+                    .kerning(0.5)
+
+                Capsule()
+                    .fill(Color.brandPurple)
+                    .frame(width: 44, height: 4)
+
+                Text("Play a track in Spotify to get started")
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+                    .multilineTextAlignment(.center)
             }
-            .font(.caption)
-            .foregroundColor(.gray)
-            .padding(.top, 32)
+
             Spacer()
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: "#281A2B"), Color(hex: "#1A1A1A")],
+                startPoint: .top,
+                endPoint: .center
+            )
+            .ignoresSafeArea()
+        )
+        // Tap anywhere to force an immediate check for a newly started track.
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.refresh()
+        }
     }
 }

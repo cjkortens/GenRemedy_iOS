@@ -80,7 +80,6 @@ struct GeminiRepository {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         let http = response as? HTTPURLResponse
-        print("[Gemini Advanced] model=\(model) status=\(http?.statusCode ?? -1)")
 
         if http?.statusCode == 503 && model == primaryModel {
             return try await fetchGenresAdvanced(prompt: prompt, systemInstruction: systemInstruction, config: config, model: backupModel)
@@ -114,7 +113,6 @@ struct GeminiRepository {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         let http = response as? HTTPURLResponse
-        print("[Gemini] model=\(model) status=\(http?.statusCode ?? -1)")
 
         if http?.statusCode == 503 && model == primaryModel {
             return try await fetchText(prompt: prompt, model: backupModel)
