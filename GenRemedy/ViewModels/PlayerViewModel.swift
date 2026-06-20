@@ -8,7 +8,6 @@ class PlayerViewModel {
     var genreDescription: String = ""
     var isLoadingGenres = false
     var isLoadingDescription = false
-    var isDescriptionExpanded = false
     var errorMessage: String?
 
     private var lastTrackId: String?
@@ -47,7 +46,6 @@ class PlayerViewModel {
                 lastTrackId = track.id
                 genres = []
                 genreDescription = ""
-                isDescriptionExpanded = false
                 await resolveGenres(for: track)
             }
         } catch {
