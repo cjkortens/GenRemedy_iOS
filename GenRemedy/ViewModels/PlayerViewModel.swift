@@ -57,7 +57,9 @@ class PlayerViewModel {
                 currentTrack = track
                 lastTrackId = track.id
                 genres = []
-                genreDescription = ""
+                // Keep the current description; resolveGenres reloads it only
+                // if the new track's top genre differs (or none is loaded yet),
+                // so back-to-back same-genre tracks reuse it instantly.
                 await resolveGenres(for: track)
             }
         } catch {
@@ -85,8 +87,12 @@ class PlayerViewModel {
 
         isLoadingGenres = false
 
-        if let primary = genres.first, primary != lastPrimaryGenre {
+        // Reload the description when the top genre changes, or when none has
+        // loaded yet (e.g. a prior fetch failed). Otherwise the existing one
+        // already matches this genre, so keep it.
+        if let primary = genres.first, primary != lastPrimaryGenre || genreDescription.isEmpty {
             lastPrimaryGenre = primary
+            genreDescription = ""
             await resolveDescription(for: primary)
         }
     }
